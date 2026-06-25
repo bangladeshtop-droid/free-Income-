@@ -1,0 +1,73 @@
+import { useState, useEffect } from "react";
+import { useAuthStore } from "../store/useAuthStore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "../lib/firebase";
+
+export default function Activity() {
+  const user = useAuthStore(state => state.user);
+  const [activities, setActivities] = useState<any[]>([]);
+
+  useEffect(() => {
+      if (!user) return;
+
+      const txRef = collection(db, 'transactions');
+      const q = query(txRef, where('userId', '==', user.uid.toString()));
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+          if (!snapshot.empty) {
+              const acts: any[] = [];
+              snapshot.docs.forEach((doc) => {
+                  const data = doc.data();
+                  acts.push({
+                      id: doc.id,
+                      type: data.type || 'transaction',
+                      amount: data.amount || 0,
+                      status: data.status || 'completed',
+                      date: new Date(data.timestamp || data.createdAt || Date.now()).getTime(),
+                      note: data.note || 'No description'
+                  });
+              });
+              // Sort descending by date
+              acts.sort((a, b) => b.date - a.date);
+              setActivities(acts);
+          } else {
+              setActivities([]);
+          }
+      });
+      return () => unsubscribe();
+  }, [user]);
+
+  return (
+    <div className="flex flex-col min-h-screen pb-20">
+      <h2 className="text-xl font-bold mb-6 text-gray-800">Activity Tracker</h2>
+      
+      {activities.length > 0 ? (
+          <div className="space-y-3">
+              {activities.map((act) => (
+                  <div key={act.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+                      <div>
+                          <p className="font-bold text-gray-800 capitalize">{act.type}</p>
+                          <p className="text-xs text-gray-500">{new Date(act.date).toLocaleString()}</p>
+                          {act.note && <p className="text-xs text-gray-400 mt-1">{act.note}</p>}
+                      </div>
+                      <div className="text-right">
+                          <p className={`font-bold ${act.type === 'deposit' || act.type === 'bonus' ? 'text-green-500' : 'text-red-500'}`}>
+                              {act.type === 'deposit' || act.type === 'bonus' ? '+' : '-'}{act.amount} VA
+                          </p>
+                          <p className="text-[10px] text-gray-400 uppercase">{act.status}</p>
+                      </div>
+                  </div>
+              ))}
+          </div>
+      ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center text-gray-900">
+            <div className="w-24 h-24 mb-6 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">
+              <span className="text-4xl">📊</span>
+            </div>
+            <h2 className="text-xl font-bold mb-2">No Activity Yet</h2>
+            <p className="text-gray-600 text-sm max-w-[250px]">Your transaction history, rewards, and daily check-ins will appear here.</p>
+          </div>
+      )}
+    </div>
+  );
+}

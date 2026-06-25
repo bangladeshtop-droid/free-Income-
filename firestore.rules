@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAdmin() {
+      return request.auth != null 
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
+    }
+    
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if isOwner(userId) || isAdmin();
+    }
+    
+    match /transactions/{transactionId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId);
+      allow update, delete: if isAdmin();
+    }
+    
+    match /ads_history/{docId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId);
+    }
+
+    match /daily_bonus_history/{docId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId);
+    }
+    
+    match /task_completions/{docId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId);
+    }
+    
+    match /task_submissions/{docId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if isAdmin();
+    }
+    
+    match /ads/{adId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    
+    match /tasks/{taskId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    
+    match /settings/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /site_settings/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

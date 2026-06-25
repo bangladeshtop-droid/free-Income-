@@ -1,0 +1,6 @@
+{
+  "name": "Crypto Earnings Platform",
+  "description": "Enterprise-grade Telegram Mini App and Web Dashboard for Crypto Earnings",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
