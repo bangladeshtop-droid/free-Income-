@@ -334,48 +334,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col pb-6">
-      {/* Header */}
-      <header className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-blue-200 to-purple-200">
-            <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-white shadow-xl">
-              <img
-                src="https://i.pravatar.cc/150?u=sayed"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center space-x-1">
-              <h1 className="font-extrabold text-[15px] uppercase tracking-wide text-gray-800">
-                {user?.username || "MD OBAIDULLAH"}
-              </h1>
-              <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                <CheckCircle className="w-2.5 h-2.5 stroke-[3]" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <button className="flex items-center space-x-1.5 bg-white rounded-full pl-1.5 pr-3 py-1.5 shadow-sm border border-gray-100 text-sm font-bold text-gray-800 active:scale-95 transition-transform">
-            <div className="w-6 h-6 rounded-full flex items-center justify-center text-[13px] bg-yellow-100 border border-yellow-200 shadow-inner">
-              💰
-            </div>
-            <span className="text-[12px] leading-tight flex items-center pt-0.5 tracking-wide">
-              {user?.vaBalance?.toLocaleString() || 0}
-            </span>
-          </button>
-          <button onClick={() => navigate('/notifications')} className="relative w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-gray-600">
-            <Bell className="w-5 h-5 fill-current text-gray-700" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-white text-white text-[9px] font-bold flex items-center justify-center z-10 shadow-sm">
-              !
-            </span>
-          </button>
-        </div>
-      </header>
-
       {/* Hero Slider */}
       <div className="relative w-full overflow-hidden rounded-[24px] shadow-[0_12px_30px_rgba(200,210,240,0.4)] border border-white h-[180px] mb-4 bg-white block">
         <AnimatePresence mode="wait">

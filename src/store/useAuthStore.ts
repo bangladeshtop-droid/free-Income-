@@ -7,8 +7,13 @@ interface User {
   uid: string;
   telegramId?: string;
   username: string;
+  fullName?: string;
   firstName?: string;
   lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  phone?: string;
+  createdAt?: string;
   role: 'super_admin' | 'admin' | 'user';
   usdtBalance: number;
   vaBalance: number;
@@ -27,6 +32,7 @@ interface AuthState {
   logout: () => void;
   initAuth: () => void;
   updateBalances: (usdt: number, va: number) => void;
+  updateUser: (data: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>((setStore, getStore) => ({
@@ -44,13 +50,15 @@ export const useAuthStore = create<AuthState>((setStore, getStore) => ({
           } else {
             const newUser: User = {
               uid: firebaseUser.uid,
+              email: firebaseUser.email || '',
               username: "User_" + firebaseUser.uid.substring(0, 5),
               role: "super_admin",
               usdtBalance: 0,
               vaBalance: 0,
               currentLevel: 1,
               totalEarned: 0,
-              referralCount: 0
+              referralCount: 0,
+              createdAt: new Date().toISOString()
             };
             setDoc(userRef, newUser).then(() => {
                 setStore({ user: newUser, isLoading: false });
@@ -75,6 +83,12 @@ export const useAuthStore = create<AuthState>((setStore, getStore) => ({
         vaBalance: va
       }).catch(e => console.log("Silent error updating balance", e));
       return { user: { ...state.user, usdtBalance: usdt, vaBalance: va } };
+    }
+    return state;
+  }),
+  updateUser: (data) => setStore((state) => {
+    if (state.user) {
+      return { user: { ...state.user, ...data } };
     }
     return state;
   }),

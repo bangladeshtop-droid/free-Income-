@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { collection, doc, updateDoc, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 declare global {
   interface Window {
@@ -38,7 +39,7 @@ export default function AdDetail() {
         updateUserAdStats(0, 0, null);
       }
     }
-  }, [user]);
+  }, [user?.uid]);
 
   const updateUserAdStats = async (
     newWatched: number,
@@ -194,13 +195,8 @@ export default function AdDetail() {
   return (
     <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-6 bg-gray-50 text-gray-900 relative">
       {/* Header */}
-      <header className="flex items-center justify-between mb-8 relative z-10 pt-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-11 h-11 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-gray-700 shadow-[0_4px_0_rgb(229,231,235)] active:shadow-[0_0px_0_rgb(229,231,235)] active:translate-y-[4px] transition-all"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+      <header className="flex items-center justify-between mb-8 relative z-10 pt-2">
+        <PremiumBackButton fallbackPath="/ads" className="scale-90 origin-left" />
         <button className="flex items-center space-x-2 bg-white border-2 border-gray-100 rounded-2xl px-3 py-2 shadow-[0_4px_0_rgb(229,231,235)] active:shadow-[0_0px_0_rgb(229,231,235)] active:translate-y-[4px] transition-all">
           <span className="text-[10px] text-blue-600 font-black border-2 border-blue-200 rounded-lg flex items-center justify-center w-6 h-6 bg-blue-50">
             A

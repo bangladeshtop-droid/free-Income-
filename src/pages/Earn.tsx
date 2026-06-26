@@ -38,7 +38,7 @@ export default function Earn() {
       }
     };
     fetchMiningState();
-  }, [user]);
+  }, [user?.uid]);
 
   useEffect(() => {
     if (status === 'mining' && endTime) {

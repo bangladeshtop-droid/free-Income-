@@ -87,8 +87,88 @@ export default function Wallet() {
   };
 
   const handleSend = async () => {
-      // Transfer Logic (Omitted for brevity, assuming same as before)
-      alert("Transfer flow triggered");
+      if (!amount || !targetUid || !user?.uid) return;
+      const numAmount = parseFloat(amount);
+      if (isNaN(numAmount) || numAmount <= 0) {
+        showToast("Enter a valid amount.", 'error');
+        return;
+      }
+      
+      if ((user.vaBalance || 0) < numAmount) {
+        showToast("Insufficient balance for transfer.", 'error');
+        return;
+      }
+
+      setIsSending(true);
+      try {
+        // Deduct from sender
+        const senderRef = doc(db, 'users', user.uid);
+        await updateDoc(senderRef, {
+          vaBalance: (user.vaBalance || 0) - numAmount
+        });
+        useAuthStore.getState().updateUser({ vaBalance: (user.vaBalance || 0) - numAmount });
+
+        // Add to receiver
+        const receiverRef = doc(db, 'users', targetUid);
+        const receiverSnap = await getDoc(receiverRef);
+        if (receiverSnap.exists()) {
+          const receiverData = receiverSnap.data();
+          await updateDoc(receiverRef, {
+            vaBalance: (receiverData.vaBalance || 0) + numAmount
+          });
+        }
+
+        // Record transaction for sender
+        await addDoc(collection(db, 'transactions'), {
+          userId: user.uid,
+          username: user.username,
+          type: 'transfer_out',
+          method: 'P2P Transfer',
+          amount: numAmount,
+          currency: 'VA',
+          status: 'completed',
+          timestamp: new Date().toISOString(),
+          receiverId: targetUid,
+          receiverName: receiverName
+        });
+        
+        // Notify sender
+        await addDoc(collection(db, 'notifications'), {
+          userId: user.uid,
+          title: 'Transfer Sent',
+          message: `You successfully sent ${numAmount} VA to ${receiverName}.`,
+          type: 'wallet',
+          read: false,
+          createdAt: new Date().toISOString()
+        });
+
+        // Notify receiver
+        await addDoc(collection(db, 'notifications'), {
+          userId: targetUid,
+          title: 'Transfer Received',
+          message: `You received ${numAmount} VA from ${user.username}.`,
+          type: 'wallet',
+          read: false,
+          createdAt: new Date().toISOString()
+        });
+
+        showToast(`Successfully transferred ${numAmount} VA to ${receiverName}`, 'success');
+        setAmount('');
+        setReceiverId('');
+        setReceiverName('');
+        setTargetUid('');
+      } catch (error) {
+        console.error(error);
+        showToast("Error during transfer", 'error');
+      }
+      setIsSending(false);
+  };
+
+  const [toast, setToast] = useState<{message: string, type: 'success'|'error'} | null>(null);
+
+  const showToast = (message: string, type: 'success'|'error') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
   };
 
   const handleDWSubmit = async () => {
@@ -97,7 +177,7 @@ export default function Wallet() {
     if (isNaN(numAmount) || numAmount <= 0) return;
 
     if (tab === 'withdraw' && (user.vaBalance || 0) < numAmount) {
-      alert("Insufficient balance for withdrawal.");
+      showToast("Insufficient balance for withdrawal.", 'error');
       return;
     }
 
@@ -121,12 +201,22 @@ export default function Wallet() {
         fiatAmount: calculateValue(dwAmount, selectedMethod.id),
         status: 'pending',
         timestamp: new Date().toISOString(),
-        txId: dwTxId,
-        sender: dwSender,
-        memo: dwMemo
+        txId: dwTxId || '',
+        sender: dwSender || '',
+        memo: dwMemo || ''
       });
 
-      alert(`${tab.toUpperCase()} request submitted successfully!`);
+      // Also create a notification for the user
+      await addDoc(collection(db, 'notifications'), {
+        userId: user.uid,
+        title: `${tab === 'deposit' ? 'Deposit' : 'Withdrawal'} Request Sent`,
+        message: `Your request for ${numAmount} VA via ${selectedMethod.name} has been submitted and is pending approval.`,
+        type: 'wallet',
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+
+      showToast(`${tab.toUpperCase()} request submitted successfully!`, 'success');
       setSelectedMethod(null);
       setDwAmount('');
       setDwTxId('');
@@ -134,7 +224,7 @@ export default function Wallet() {
       setDwMemo('');
     } catch (e) {
       console.error(e);
-      alert("Error submitting request.");
+      showToast("Error submitting request.", 'error');
     }
     setIsSubmitting(false);
   };
@@ -147,8 +237,16 @@ export default function Wallet() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-8 bg-gradient-to-b from-slate-50 to-indigo-50 text-gray-900 overflow-hidden">
+    <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-8 bg-gradient-to-b from-slate-50 to-indigo-50 text-gray-900 overflow-hidden relative">
       
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-xl shadow-lg border ${toast.type === 'success' ? 'bg-green-100 border-green-200 text-green-800' : 'bg-red-100 border-red-200 text-red-800'} animate-in slide-in-from-top-4 flex items-center space-x-2`}>
+           <CheckCircle2 className={`w-5 h-5 ${toast.type === 'success' ? 'text-green-600' : 'text-red-600'}`} />
+           <span className="font-bold text-sm whitespace-nowrap">{toast.message}</span>
+        </div>
+      )}
+
       {/* Top Tabs */}
       {!selectedMethod && (
         <div className="bg-white rounded-[24px] p-2 xl:p-1.5 mb-6 flex items-center justify-between shadow-[0_4px_0_rgb(229,231,235)] border-2 border-gray-100">

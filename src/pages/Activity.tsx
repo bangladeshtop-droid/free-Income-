@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 export default function Activity() {
   const user = useAuthStore(state => state.user);
@@ -35,11 +36,14 @@ export default function Activity() {
           }
       });
       return () => unsubscribe();
-  }, [user]);
+  }, [user?.uid]);
 
   return (
     <div className="flex flex-col min-h-screen pb-20">
-      <h2 className="text-xl font-bold mb-6 text-gray-800">Activity Tracker</h2>
+      <div className="flex items-center mb-6 pt-2">
+        <PremiumBackButton fallbackPath="/profile" className="scale-90 origin-left mr-4" />
+        <h2 className="text-xl font-bold text-gray-800">Activity Tracker</h2>
+      </div>
       
       {activities.length > 0 ? (
           <div className="space-y-3">

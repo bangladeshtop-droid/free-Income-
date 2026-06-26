@@ -3,9 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from './store/useAuthStore';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { db } from './lib/firebase';
 import AppLayout from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Wallet from "./pages/Wallet";
@@ -25,6 +27,9 @@ import PageViewer from "./pages/PageViewer";
 import Auth from "./pages/Auth";
 import Notifications from "./pages/Notifications";
 
+import AccountSettings from "./pages/AccountSettings";
+import Refer from "./pages/Refer";
+
 declare global {
   interface Window {
     googleTranslateElementInit: () => void;
@@ -35,10 +40,58 @@ declare global {
 export default function App() {
   const initAuth = useAuthStore((state) => state.initAuth);
   const { user, isLoading } = useAuthStore();
+  const prevBalanceRef = useRef<number | null>(null);
+  const initialTaskLoadRef = useRef(true);
 
+  // Ask for notification permission
   useEffect(() => {
     initAuth();
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, [initAuth]);
+
+  // Listen for balance changes for rewards
+  useEffect(() => {
+    if (user && 'Notification' in window && Notification.permission === 'granted') {
+      const currentBalance = user.vaBalance || 0;
+      if (prevBalanceRef.current !== null && currentBalance > prevBalanceRef.current) {
+        const diff = currentBalance - prevBalanceRef.current;
+        new Notification("Reward Granted! 🎁", {
+          body: `You just received ${diff.toLocaleString()} VA!`,
+          icon: '/favicon.ico' // Or any app icon
+        });
+      }
+      prevBalanceRef.current = currentBalance;
+    }
+  }, [user?.vaBalance]);
+
+  // Listen for new tasks
+  useEffect(() => {
+    if (!user || !('Notification' in window) || Notification.permission !== 'granted') return;
+    
+    const tasksRef = collection(db, 'tasks');
+    const q = query(tasksRef, orderBy('createdAt', 'desc'), limit(1));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (initialTaskLoadRef.current) {
+        initialTaskLoadRef.current = false;
+        return;
+      }
+      
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const taskData = change.doc.data();
+          new Notification("New Task Available! 📋", {
+            body: `Earn ${taskData.reward || 0} VA: ${taskData.title || 'Complete this task'}`,
+            icon: '/favicon.ico'
+          });
+        }
+      });
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   useEffect(() => {
     window.googleTranslateElementInit = () => {
@@ -125,8 +178,8 @@ export default function App() {
         <Route path="/task/:id" element={<TaskDetail />} />
         <Route path="/language" element={<Language />} />
         <Route path="/vip" element={<PageViewer />} />
-        <Route path="/refer" element={<PageViewer />} />
-        <Route path="/settings" element={<PageViewer />} />
+        <Route path="/refer" element={<Refer />} />
+        <Route path="/settings" element={<AccountSettings />} />
         <Route path="/support" element={<PageViewer />} />
         <Route path="/about" element={<PageViewer />} />
         <Route path="/developer" element={<PageViewer />} />

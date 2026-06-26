@@ -4,15 +4,23 @@ import { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
+const HARDCODED_ADS = Array.from({ length: 15 }, (_, i) => ({
+  id: `ad-${i + 1}`,
+  name: `Ad Campaign ${i + 1}`,
+  type: 'limit',
+  limit: '0/50',
+  progress: '0%',
+  active: true
+}));
+
 const AD_EMOJIS = ['🎬', '📺', '🚀', '🎁', '💎', '🎯', '🕹️', '🏆', '🔥', '🌟', '🤑', '✨', '⚡', '🎉', '🍿'];
 
 export default function Ads() {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>(HARDCODED_ADS);
 
   useEffect(() => {
     const adsRef = collection(db, 'ads');
-    // only fetch active ads, or all ads depending on your preference. Let's fetch all active ones.
     const q = query(adsRef, where("active", "==", true));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
@@ -21,13 +29,25 @@ export default function Ads() {
            ...doc.data(),
            fbId: doc.id
         }));
-        setTasks(adsList);
+        
+        // Merge real data with hardcoded data
+        const mergedTasks = HARDCODED_ADS.map((hardcodedTask, index) => {
+          if (adsList[index]) {
+             return {
+                ...hardcodedTask,
+                ...adsList[index],
+                fbId: adsList[index].id
+             };
+          }
+          return hardcodedTask;
+        });
+        setTasks(mergedTasks);
       } else {
-        setTasks([]);
+        setTasks(HARDCODED_ADS);
       }
     }, (error) => {
       console.warn("Ads fetch error:", error);
-      setTasks([]);
+      setTasks(HARDCODED_ADS);
     });
     return () => unsubscribe();
   }, []);

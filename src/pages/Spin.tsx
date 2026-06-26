@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { playSound } from "../lib/sounds";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 export default function Spin() {
   const navigate = useNavigate();
@@ -55,12 +56,9 @@ export default function Spin() {
       <div className="absolute bottom-20 left-20 w-40 h-40 bg-blue-300/20 blur-3xl rounded-full" />
 
       {/* Header */}
-      <header className="flex items-center justify-between mb-6 text-gray-900 relative z-10 drop-shadow-sm">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-black/10 transition-colors">
-          <ChevronLeft className="w-8 h-8" strokeWidth={2.5} />
-        </button>
+      <header className="flex items-center mb-6 text-gray-900 relative z-10 drop-shadow-sm pt-2">
+        <PremiumBackButton fallbackPath="/" className="scale-90 origin-left mr-4" />
         <h1 className="text-xl font-bold tracking-wide">Lucky Draw</h1>
-        <div className="w-8" />
       </header>
 
       {/* Try count button */}

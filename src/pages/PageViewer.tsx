@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { db } from "../lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 export default function PageViewer() {
   const location = useLocation();
@@ -52,11 +53,9 @@ export default function PageViewer() {
   }, [location.pathname, title]);
 
   return (
-    <div className="flex flex-col min-h-screen px-4 py-6 bg-gray-50">
-       <header className="flex items-center space-x-3 mb-6 relative z-10">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+    <div className="flex flex-col min-h-screen px-4 py-6 bg-gray-50 relative">
+      <header className="flex items-center mb-6 relative z-10 pt-2">
+        <PremiumBackButton fallbackPath="/profile" className="mr-4 scale-90" />
         <h1 className="font-extrabold text-lg text-gray-800">{title}</h1>
       </header>
       

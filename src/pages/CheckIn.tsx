@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { playSound } from "../lib/sounds";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 declare global {
     interface Window {
@@ -42,7 +43,7 @@ export default function CheckIn() {
          }
      };
      fetchHistory();
-  }, [user]);
+  }, [user?.uid]);
 
   const handleCheckIn = () => {
       if (isCheckedIn || !user) return;
@@ -107,12 +108,10 @@ export default function CheckIn() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-6 bg-gradient-to-b from-[#8ab4f8] to-[#EAF0FF]">
+    <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-6 bg-gradient-to-b from-[#8ab4f8] to-[#EAF0FF] relative">
       {/* Header */}
-      <header className="flex items-center justify-between mb-6 text-gray-900 relative z-10">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-black/10">
-          <ChevronLeft className="w-6 h-6" />
-        </button>
+      <header className="flex items-center justify-between mb-6 text-gray-900 relative z-10 pt-2">
+        <PremiumBackButton fallbackPath="/" className="scale-90 origin-left" />
         <div className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-full primary-gradient flex items-center justify-center font-bold text-white shadow-sm border border-purple-300">
                 VA

@@ -13,6 +13,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { collection, doc, getDoc, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { playSound } from "../lib/sounds";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 export default function TaskDetail() {
   const { id } = useParams();
@@ -162,13 +163,8 @@ export default function TaskDetail() {
   return (
     <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-6 bg-gray-50 text-gray-900 relative">
       {/* Header */}
-      <header className="flex items-center space-x-4 mb-6 pt-4 relative z-10">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-11 h-11 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-gray-700 shadow-[0_4px_0_rgb(229,231,235)] active:shadow-[0_0px_0_rgb(229,231,235)] active:translate-y-[4px] transition-all"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+      <header className="flex items-center mb-6 pt-2 relative z-10">
+        <PremiumBackButton fallbackPath="/task" className="scale-90 origin-left mr-4" />
         <h1 className="text-2xl font-black text-[#2C334A] tracking-tight">Task Details</h1>
       </header>
 

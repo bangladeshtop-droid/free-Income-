@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useAuthStore } from "../store/useAuthStore";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 type TabType = 'admin' | 'app' | 'wallet';
 
@@ -28,21 +29,25 @@ export default function Notifications() {
 
       // 2. Fetch App/Task History
       try {
-        const appQ = query(collection(db, 'task_history'), where('userId', '==', user.uid), orderBy('timestamp', 'desc'));
+        const appQ = query(collection(db, 'task_history'), where('userId', '==', user.uid));
         const appSnap = await getDocs(appQ);
-        setAppNotices(appSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const docs = appSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        docs.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        setAppNotices(docs);
       } catch(e) { console.warn("App notices", e); }
 
       // 3. Fetch Wallet Transactions
       try {
-        const walletQ = query(collection(db, 'transactions'), where('userId', '==', user.uid), orderBy('timestamp', 'desc'));
+        const walletQ = query(collection(db, 'transactions'), where('userId', '==', user.uid));
         const walletSnap = await getDocs(walletQ);
-        setWalletNotices(walletSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const docs = walletSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        docs.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        setWalletNotices(docs);
       } catch(e) { console.warn("Wallet notices", e); }
     };
 
     fetchNotices();
-  }, [user]);
+  }, [user?.uid]);
 
   const tabs = [
     { id: 'admin', label: 'Admin Notice', icon: FileText },
@@ -51,14 +56,11 @@ export default function Notifications() {
   ] as const;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 -mx-4 -my-6">
-      <div className="bg-white px-4 pt-12 pb-4 shadow-sm z-10 sticky top-0">
-        <div className="flex items-center justify-between mb-4">
-            <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-gray-100">
-                <ArrowLeft className="w-5 h-5 text-gray-700" />
-            </button>
+    <div className="flex flex-col min-h-screen bg-gray-50 -mx-4 -my-6 relative">
+      <div className="bg-white px-4 pt-10 pb-4 shadow-sm z-10 sticky top-0">
+        <div className="flex items-center mb-4">
+            <PremiumBackButton fallbackPath="/" className="scale-90 origin-left mr-4" />
             <h1 className="text-lg font-black text-[#2C334A] tracking-tight">Notifications</h1>
-            <div className="w-9" />
         </div>
 
         <div className="flex bg-gray-100 p-1 rounded-xl">

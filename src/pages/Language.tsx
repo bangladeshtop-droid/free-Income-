@@ -1,6 +1,7 @@
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguageStore } from "../store/useLanguageStore";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -47,14 +48,11 @@ export default function Language() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-6 bg-gray-50">
+    <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-6 bg-gray-50 relative">
       {/* Header */}
-      <header className="flex items-center justify-between mb-8 text-[#2C334A] pt-4">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-black/5 transition-colors">
-          <ChevronLeft className="w-6 h-6" />
-        </button>
+      <header className="flex items-center mb-8 text-[#2C334A] pt-2">
+        <PremiumBackButton fallbackPath="/profile" className="scale-90 origin-left mr-4" />
         <h1 className="text-xl font-bold">Language Settings</h1>
-        <div className="w-8" />
       </header>
 
       <div className="flex-1 overflow-y-auto pb-8 hide-scrollbar">

@@ -105,8 +105,6 @@ export default function Profile() {
             { label: "Activity", icon: Activity, color: "text-purple-600", bg: "bg-gradient-to-br from-purple-100 to-purple-200", path: "/activity" },
             { label: "VIP Plan", icon: Crown, color: "text-amber-600", bg: "bg-gradient-to-br from-amber-100 to-amber-200", path: "/vip" },
             { label: "Refer", icon: Users, color: "text-green-600", bg: "bg-gradient-to-br from-green-100 to-green-200", path: "/refer" },
-            { label: "Language", icon: Globe, color: "text-indigo-600", bg: "bg-gradient-to-br from-indigo-100 to-indigo-200", path: "/language" },
-            { label: "About", icon: Info, color: "text-pink-600", bg: "bg-gradient-to-br from-pink-100 to-pink-200", path: "/about" },
             { label: "Developer", icon: Code, color: "text-gray-700", bg: "bg-gradient-to-br from-gray-200 to-gray-300", path: "/developer" },
           ].map((item) => (
             <button 

@@ -31,6 +31,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { useEffect } from "react";
+import PremiumBackButton from "../components/PremiumBackButton";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -97,7 +98,7 @@ export default function AdminLayout() {
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h2 className="font-semibold text-lg truncate">Admin Panel</h2>
+            <h2 className="font-semibold text-lg truncate ml-2">Admin Panel</h2>
           </div>
           <div className="flex items-center space-x-4">
             <button className="text-gray-400 hover:text-white relative p-1">
@@ -474,7 +475,7 @@ function AdminTasks() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center bg-[#151A23] -mt-6 -mx-6 px-6 py-4 border-b border-white/10 sticky top-0 z-10">
         <h2 className="text-xl font-bold">Task Management</h2>
         <button
           onClick={() => {
@@ -1130,7 +1131,7 @@ function AdminUsers() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center bg-[#151A23] -mt-6 -mx-6 px-6 py-4 border-b border-white/10 sticky top-0 z-10">
         <h2 className="text-xl font-bold tracking-tight">Users & VIP</h2>
       </div>
 
@@ -1298,7 +1299,7 @@ function AdminRequests() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center bg-[#151A23] -mt-6 -mx-6 px-6 py-4 border-b border-white/10 sticky top-0 z-10">
         <h2 className="text-xl font-bold tracking-tight">Requests Management</h2>
       </div>
 
