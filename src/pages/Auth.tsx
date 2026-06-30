@@ -5,7 +5,7 @@ import {
   updateProfile 
 } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
-import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, increment } from 'firebase/firestore';
 import { User, Lock, Mail, Phone, Users, ShieldCheck, RefreshCw } from 'lucide-react';
 
 export default function Auth() {
@@ -28,6 +28,25 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [tgLoading, setTgLoading] = useState(true);
 
+  const handleReferral = async (code: string) => {
+     if (!code) return null;
+     try {
+       const referrerRef = doc(db, 'users', code);
+       const referrerSnap = await getDoc(referrerRef);
+       if (referrerSnap.exists()) {
+          // Increment referral count and reward referrer
+          await updateDoc(referrerRef, {
+             referralCount: increment(1),
+             vaBalance: increment(250) // Bonus credits as seen in Refer.tsx
+          });
+          return code;
+       }
+     } catch (e) {
+       console.error("Error processing referral:", e);
+     }
+     return null;
+  };
+
   // Telegram Auto-Login Logic
   useEffect(() => {
     const checkTelegramAuth = async () => {
@@ -41,7 +60,6 @@ export default function Auth() {
           // Try to sign in
           try {
             await signInWithEmailAndPassword(auth, tgEmail, tgPassword);
-            // Success
             return;
           } catch (signInErr: any) {
             // If user doesn't exist, create it
@@ -55,6 +73,9 @@ export default function Auth() {
                 displayName: displayName
               });
 
+              let startParam = tg.initDataUnsafe.start_param || inviteCode;
+              let referredBy = await handleReferral(startParam);
+
               const userRef = doc(db, 'users', user.uid);
               await setDoc(userRef, {
                 uid: user.uid,
@@ -67,6 +88,7 @@ export default function Auth() {
                 currentLevel: 1,
                 totalEarned: 0,
                 referralCount: 0,
+                referredBy: referredBy,
                 createdAt: new Date().toISOString()
               });
             } else {
@@ -82,7 +104,7 @@ export default function Auth() {
     };
     
     checkTelegramAuth();
-  }, []);
+  }, [inviteCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,15 +137,8 @@ export default function Auth() {
         // Initialize user in firestore
         const userRef = doc(db, 'users', user.uid);
         
-        // Check for referral
-        let referredBy = null;
-        if (inviteCode) {
-           // Basic logic: find user whose uid starts with the code, if format is R_XXXXXX
-           // Since we use R_ + uid substring, we can try to query users, but this is a mock.
-           // In production, we'd query users where referralCode === inviteCode.
-           // We'll just store the code they used for now.
-           referredBy = inviteCode;
-        }
+        // Handle referral
+        let referredBy = await handleReferral(inviteCode);
 
         await setDoc(userRef, {
           uid: user.uid,

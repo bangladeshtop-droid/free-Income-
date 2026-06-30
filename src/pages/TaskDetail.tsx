@@ -170,23 +170,23 @@ export default function TaskDetail() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto pb-20 space-y-6">
-        <div className="bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-2 border-gray-100 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 blur-[40px] rounded-full pointer-events-none group-hover:bg-blue-100 transition-colors" />
+        <div className="bg-white/80 backdrop-blur-xl rounded-[24px] p-5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-white relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 blur-[30px] rounded-full pointer-events-none group-hover:bg-blue-200 transition-colors" />
           
           <div className="relative z-10">
-            <h2 className="text-2xl font-black text-[#2C334A] mb-2 leading-tight">{task.title}</h2>
+            <h2 className="text-xl font-black text-[#2C334A] mb-2 leading-tight">{task.title}</h2>
             
-            <div className="inline-flex items-center space-x-2 bg-blue-50 border-2 border-blue-100 px-4 py-2 rounded-xl mb-6 shadow-inner">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">🪙</div>
-              <span className="text-blue-700 font-black text-lg tracking-tight">+{task.reward} <span className="text-sm font-bold text-blue-500">Coins</span></span>
+            <div className="inline-flex items-center space-x-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 px-3 py-1.5 rounded-lg mb-5 shadow-sm">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm">🪙</div>
+              <span className="text-blue-700 font-bold text-sm tracking-tight">+{task.reward} <span className="text-xs font-semibold opacity-80">Coins</span></span>
             </div>
 
-            <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border-2 border-indigo-100/50 rounded-2xl p-5 mb-6 shadow-inner relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500" />
-              <h3 className="font-extrabold text-[11px] text-indigo-800 uppercase tracking-widest mb-2 opacity-80">
+            <div className="bg-gradient-to-br from-indigo-50/50 to-blue-50/50 border border-indigo-100 rounded-xl p-4 mb-5 shadow-inner relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-indigo-400" />
+              <h3 className="font-extrabold text-[10px] text-indigo-700 uppercase tracking-widest mb-1.5 opacity-80">
                 Instructions
               </h3>
-              <p className="text-[13px] text-indigo-900 font-medium whitespace-pre-wrap leading-relaxed">
+              <p className="text-[12px] text-indigo-900 font-medium whitespace-pre-wrap leading-relaxed">
                 {task.description ||
                   "Follow the instructions to complete this task and earn your reward. Make sure to complete all steps accurately to receive coins."}
               </p>
@@ -197,24 +197,24 @@ export default function TaskDetail() {
                 onClick={() =>
                   window.open(task.youtubeUrl || "https://youtube.com", "_blank")
                 }
-                className="w-full flex flex-col items-center justify-center p-4 bg-white rounded-2xl border-2 border-red-100 shadow-[0_6px_0_rgb(254,226,226)] active:shadow-[0_0px_0_rgb(254,226,226)] active:translate-y-[6px] transform transition-all duration-150 group/btn"
+                className="w-full flex flex-col items-center justify-center p-3 bg-gradient-to-b from-white to-red-50/30 rounded-xl border border-red-100 shadow-sm active:scale-95 transform transition-all duration-150 group/btn"
               >
-                <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center mb-2 shadow-inner group-hover/btn:scale-110 transition-transform">
-                  <Video className="w-6 h-6 text-red-500 drop-shadow-sm" />
+                <div className="w-10 h-10 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center mb-1.5 shadow-inner group-hover/btn:scale-110 transition-transform">
+                  <Video className="w-5 h-5 text-red-500 drop-shadow-sm" />
                 </div>
-                <span className="font-bold text-[11px] text-red-600 text-center leading-tight uppercase tracking-wider">Tutorial</span>
+                <span className="font-bold text-[10px] text-red-600 text-center leading-tight uppercase tracking-wider">Tutorial</span>
               </button>
 
               <button
                 onClick={() =>
                   window.open(task.telegraphUrl || "https://telegra.ph", "_blank")
                 }
-                className="w-full flex flex-col items-center justify-center p-4 bg-white rounded-2xl border-2 border-indigo-100 shadow-[0_6px_0_rgb(224,231,255)] active:shadow-[0_0px_0_rgb(224,231,255)] active:translate-y-[6px] transform transition-all duration-150 group/btn"
+                className="w-full flex flex-col items-center justify-center p-3 bg-gradient-to-b from-white to-indigo-50/30 rounded-xl border border-indigo-100 shadow-sm active:scale-95 transform transition-all duration-150 group/btn"
               >
-                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-2 shadow-inner group-hover/btn:scale-110 transition-transform">
-                  <LinkIcon className="w-6 h-6 text-indigo-500 drop-shadow-sm" />
+                <div className="w-10 h-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center mb-1.5 shadow-inner group-hover/btn:scale-110 transition-transform">
+                  <LinkIcon className="w-5 h-5 text-indigo-500 drop-shadow-sm" />
                 </div>
-                <span className="font-bold text-[11px] text-indigo-600 text-center leading-tight uppercase tracking-wider">Read Guide</span>
+                <span className="font-bold text-[10px] text-indigo-600 text-center leading-tight uppercase tracking-wider">Read Guide</span>
               </button>
             </div>
           </div>

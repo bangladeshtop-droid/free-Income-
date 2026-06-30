@@ -23,6 +23,11 @@ interface User {
   dailyAdsWatched?: number;
   currentAdCount?: number;
   adCountdownUntil?: number;
+  isVip?: boolean;
+  vipExpiry?: number;
+  dailySpins?: number;
+  lastSpinDate?: number;
+  pushEnabled?: boolean;
 }
 
 interface AuthState {
@@ -48,24 +53,10 @@ export const useAuthStore = create<AuthState>((setStore, getStore) => ({
           if (snapshot.exists()) {
             setStore({ user: snapshot.data() as User, isLoading: false });
           } else {
-            const newUser: User = {
-              uid: firebaseUser.uid,
-              email: firebaseUser.email || '',
-              username: "User_" + firebaseUser.uid.substring(0, 5),
-              role: "super_admin",
-              usdtBalance: 0,
-              vaBalance: 0,
-              currentLevel: 1,
-              totalEarned: 0,
-              referralCount: 0,
-              createdAt: new Date().toISOString()
-            };
-            setDoc(userRef, newUser).then(() => {
-                setStore({ user: newUser, isLoading: false });
-            }).catch((err) => {
-                console.warn("Could not write user profile:", err);
-                setStore({ user: newUser, isLoading: false });
-            });
+            // Document doesn't exist yet (or was deleted).
+            // Auth.tsx handles creating the initial document during registration.
+            // We just wait for the snapshot to trigger again once created.
+            setStore({ isLoading: false });
           }
         }, (error) => {
           console.warn("User fetch error:", error);

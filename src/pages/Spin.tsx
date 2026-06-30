@@ -4,11 +4,25 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { playSound } from "../lib/sounds";
 import PremiumBackButton from "../components/PremiumBackButton";
+import { useAuthStore } from "../store/useAuthStore";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 export default function Spin() {
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
+
+  const isVipUser = user?.isVip && user?.vipExpiry && user?.vipExpiry > Date.now();
+  const MAX_SPINS = isVipUser ? 3 : 1;
+
+  // Calculate today's spins
+  const today = new Date().setHours(0,0,0,0);
+  let spinsToday = 0;
+  if (user?.lastSpinDate && user.lastSpinDate >= today) {
+     spinsToday = user.dailySpins || 0;
+  }
 
   const prizes = [
     { text: "10 VA", isCrypto: false },
@@ -28,10 +42,24 @@ export default function Spin() {
     .map((_, i) => `${i % 2 === 0 ? '#FFFFFF' : '#F3E8FF'} ${i * sliceAngle}deg ${(i + 1) * sliceAngle}deg`)
     .join(", ");
 
-  const spinWheel = () => {
+  const spinWheel = async () => {
     if (isSpinning) return;
+    if (spinsToday >= MAX_SPINS) {
+        alert(`You have reached your daily limit of ${MAX_SPINS} spin(s). Come back tomorrow!`);
+        return;
+    }
+
     setIsSpinning(true);
     playSound('spin');
+
+    // Update DB
+    if (user) {
+        await updateDoc(doc(db, 'users', user.uid), {
+            dailySpins: spinsToday + 1,
+            lastSpinDate: Date.now()
+        });
+        useAuthStore.getState().updateUser({ dailySpins: spinsToday + 1, lastSpinDate: Date.now() });
+    }
     
     // Play tick sound every few MS during spin
     let spinSoundInterval = setInterval(() => {
@@ -45,6 +73,7 @@ export default function Spin() {
       clearInterval(spinSoundInterval);
       setIsSpinning(false);
       playSound('success');
+      alert("Congratulations! Reward added.");
     }, 5000);
   };
 

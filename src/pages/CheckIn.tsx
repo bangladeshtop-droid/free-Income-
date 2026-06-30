@@ -28,18 +28,42 @@ export default function CheckIn() {
          const histRef = query(collection(db, 'daily_bonus_history'), where('userId', '==', user.uid.toString()));
          const snapshot = await getDocs(histRef);
          if (!snapshot.empty) {
-             let latestDate = 0;
-             let count = 0;
-             snapshot.docs.forEach(doc => {
-                 count++;
-                 const date = doc.data().date || 0;
-                 if (date > latestDate) latestDate = date;
-             });
-             setStreak(count);
+             const dates = snapshot.docs.map(doc => {
+                 const data = doc.data();
+                 return new Date(data.date).setHours(0,0,0,0);
+             }).sort((a, b) => b - a); // sort descending
+
+             let currentStreak = 0;
              const today = new Date().setHours(0,0,0,0);
-             if (latestDate >= today) {
-                 setIsCheckedIn(true);
+             const yesterday = today - 86400000;
+
+             if (dates.length > 0) {
+                 if (dates[0] === today) {
+                     setIsCheckedIn(true);
+                     currentStreak = 1;
+                     let checkDate = yesterday;
+                     for (let i = 1; i < dates.length; i++) {
+                         if (dates[i] === checkDate) {
+                             currentStreak++;
+                             checkDate -= 86400000;
+                         } else {
+                             break;
+                         }
+                     }
+                 } else if (dates[0] === yesterday) {
+                     currentStreak = 1;
+                     let checkDate = yesterday - 86400000;
+                     for (let i = 1; i < dates.length; i++) {
+                         if (dates[i] === checkDate) {
+                             currentStreak++;
+                             checkDate -= 86400000;
+                         } else {
+                             break;
+                         }
+                     }
+                 }
              }
+             setStreak(currentStreak);
          }
      };
      fetchHistory();
@@ -61,29 +85,33 @@ export default function CheckIn() {
               setIsCheckedIn(true);
               setStreak(streak + 1);
 
+              const isVipUser = user.isVip && user.vipExpiry && user.vipExpiry > Date.now();
+              const baseReward = 30;
+              const reward = isVipUser ? Math.floor(baseReward * 1.05) : baseReward;
+
               // 1. Give reward
               const updateBalances = useAuthStore.getState().updateBalances;
-              updateBalances(user.usdtBalance, user.vaBalance + 30);
+              updateBalances(user.usdtBalance, user.vaBalance + reward);
               
               // 2. Log in history
               await addDoc(collection(db, 'daily_bonus_history'), {
                   userId: user.uid.toString(),
                   date: Date.now(),
-                  amount: 30
+                  amount: reward
               });
 
               // 3. Log transaction
               await addDoc(collection(db, 'transactions'), {
                   userId: user.uid.toString(),
                   type: 'bonus',
-                  amount: 30,
+                  amount: reward,
                   status: 'completed',
                   createdAt: Date.now(),
-                  note: 'Daily Check-in Bonus'
+                  note: 'Daily Check-in Bonus' + (isVipUser ? ' (VIP +5%)' : '')
               });
 
               playSound('reward');
-              alert("Checked in successfully! You received 30 Coins.");
+              alert(`Checked in successfully! You received ${reward} Coins.`);
           }, 15000);
       };
 

@@ -1,6 +1,7 @@
 import { CheckCircle, Bell } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import AnimatedCounter from "../AnimatedCounter";
 
 export default function TopNav() {
   const user = useAuthStore((state) => state.user);
@@ -36,7 +37,7 @@ export default function TopNav() {
             💰
           </div>
           <span className="text-[12px] leading-tight flex items-center pt-0.5 tracking-wide">
-            {user?.vaBalance?.toLocaleString() || 0}
+            <AnimatedCounter value={user?.vaBalance || 0} />
           </span>
         </button>
         <button

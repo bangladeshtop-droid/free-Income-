@@ -9,12 +9,10 @@ export default function Leaderboard() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-     // Fetch top users based on active tab
+     // Fetch all users and sort locally to ensure users without the fields still appear
      const usersRef = collection(db, 'users');
-     const orderByField = activeTab === 'refer' ? 'referralCount' : 'totalEarned';
-     const q = query(usersRef, orderBy(orderByField, 'desc'), limit(50));
      
-     const unsubscribe = onSnapshot(q, (snapshot) => {
+     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
          if (!snapshot.empty) {
              const usersArray: any[] = [];
              snapshot.docs.forEach((doc) => {
@@ -22,15 +20,25 @@ export default function Leaderboard() {
                  usersArray.push({
                      id: doc.id,
                      ...data,
-                     score: data[orderByField] || 0
+                     referralCount: data.referralCount || 0,
+                     totalEarned: data.totalEarned || 0,
+                     vaBalance: data.vaBalance || 0
                  });
              });
              
-             const formattedUsers = usersArray.map((u, index) => ({
+             const orderByField = activeTab === 'refer' ? 'referralCount' : 'totalEarned';
+             
+             // Sort descending
+             usersArray.sort((a, b) => b[orderByField] - a[orderByField]);
+             
+             // Take top 50
+             const topUsers = usersArray.slice(0, 50);
+
+             const formattedUsers = topUsers.map((u, index) => ({
                  rank: index + 1,
                  name: u.username || 'User',
                  handle: u.telegramId ? `@${u.telegramId}` : `@user_${u.id.substring(0,4)}`,
-                 score: u.score,
+                 score: u[orderByField],
                  initial: (u.username || 'U').substring(0, 2).toUpperCase(),
              }));
 

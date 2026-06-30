@@ -103,13 +103,17 @@ export default function Earn() {
       const userRef = doc(db, 'users', user.uid);
       const snap = await getDoc(userRef);
       if (snap.exists()) {
+        const isVipUser = user.isVip && user.vipExpiry && user.vipExpiry > Date.now();
+        const reward = isVipUser ? Math.floor(MINING_REWARD * 1.05) : MINING_REWARD;
+        
         const currentBalance = snap.data().vaBalance || 0;
         await updateDoc(userRef, {
-          vaBalance: currentBalance + MINING_REWARD,
+          vaBalance: currentBalance + reward,
           miningStartTime: null,
           miningEndTime: null,
         });
-        useAuthStore.getState().updateUser({ vaBalance: currentBalance + MINING_REWARD });
+        useAuthStore.getState().updateUser({ vaBalance: currentBalance + reward });
+        alert(`Claimed ${reward} VA tokens successfully!` + (isVipUser ? ' (VIP +5%)' : ''));
       }
       
       setStatus('idle');

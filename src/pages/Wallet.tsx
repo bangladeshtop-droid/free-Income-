@@ -3,6 +3,7 @@ import { Send, Wallet as WalletIcon, ArrowDownToLine, ChevronLeft, Copy, CheckCi
 import { useAuthStore } from "../store/useAuthStore";
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import AnimatedCounter from "../components/AnimatedCounter";
 
 export default function Wallet() {
   const [tab, setTab] = useState<'deposit' | 'withdraw' | 'transfer'>('deposit');
@@ -419,7 +420,9 @@ export default function Wallet() {
                 <div className="space-y-1.5">
                     <div className="flex justify-between items-center">
                         <label className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">Amount</label>
-                        <span className="text-orange-500 text-[10px] font-black">Balance: {user?.vaBalance?.toLocaleString() || 0}</span>
+                        <span className="text-orange-500 text-[10px] font-black">
+                            Balance: <AnimatedCounter value={user?.vaBalance || 0} />
+                        </span>
                     </div>
                     <input 
                         type="number" 

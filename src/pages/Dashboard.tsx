@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { playSound } from "../lib/sounds";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import AnimatedCounter from "../components/AnimatedCounter";
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
@@ -215,6 +216,7 @@ export default function Dashboard() {
       icon: "💰",
       title: "Total Earned",
       value: (user?.totalEarned || 0).toLocaleString(),
+      rawValue: user?.totalEarned || 0,
       sub: "Coins",
       color: "text-indigo-600",
       bg: "to-indigo-50",
@@ -225,6 +227,7 @@ export default function Dashboard() {
       icon: "📋",
       title: "Total Tasks",
       value: ((user as any)?.totalTasks || 0).toLocaleString(),
+      rawValue: (user as any)?.totalTasks || 0,
       sub: "Tasks",
       color: "text-blue-600",
       bg: "to-blue-50",
@@ -235,6 +238,7 @@ export default function Dashboard() {
       icon: "👥",
       title: "Total Referrals",
       value: (user?.referralCount || 0).toLocaleString(),
+      rawValue: user?.referralCount || 0,
       sub: "Users",
       color: "text-emerald-500",
       bg: "to-emerald-50",
@@ -245,6 +249,7 @@ export default function Dashboard() {
       icon: "📺",
       title: "Ads Watched",
       value: (user?.dailyAdsWatched || 0).toLocaleString(),
+      rawValue: user?.dailyAdsWatched || 0,
       sub: "Ads",
       color: "text-red-500",
       bg: "to-red-50",
@@ -255,6 +260,7 @@ export default function Dashboard() {
       icon: "🎁",
       title: "Total Rewards",
       value: (user?.vaBalance || 0).toLocaleString(),
+      rawValue: user?.vaBalance || 0,
       sub: "Coins",
       color: "text-amber-500",
       bg: "to-amber-50",
@@ -265,6 +271,7 @@ export default function Dashboard() {
       icon: "🔥",
       title: "Daily Streak",
       value: ((user as any)?.currentStreak || 0).toLocaleString(),
+      rawValue: (user as any)?.currentStreak || 0,
       sub: "Days",
       color: "text-orange-500",
       bg: "to-orange-50",
@@ -275,6 +282,7 @@ export default function Dashboard() {
       icon: "⏳",
       title: "Pending Tasks",
       value: ((user as any)?.pendingTasks || 0).toLocaleString(),
+      rawValue: (user as any)?.pendingTasks || 0,
       sub: "Tasks",
       color: "text-blue-600",
       bg: "to-blue-50",
@@ -285,6 +293,7 @@ export default function Dashboard() {
       icon: "✅",
       title: "Completed",
       value: ((user as any)?.tasksCompleted || 0).toLocaleString(),
+      rawValue: (user as any)?.tasksCompleted || 0,
       sub: "Tasks",
       color: "text-green-500",
       bg: "to-green-50",
@@ -305,6 +314,7 @@ export default function Dashboard() {
       icon: "🎯",
       title: "Active Tasks",
       value: ((user as any)?.activeTasks || 0).toLocaleString(),
+      rawValue: (user as any)?.activeTasks || 0,
       sub: "Tasks",
       color: "text-cyan-500",
       bg: "to-cyan-50",
@@ -315,6 +325,7 @@ export default function Dashboard() {
       icon: "🎮",
       title: "Games Played",
       value: ((user as any)?.gamesPlayed || 0).toLocaleString(),
+      rawValue: (user as any)?.gamesPlayed || 0,
       sub: "Games",
       color: "text-violet-500",
       bg: "to-violet-50",
@@ -325,6 +336,7 @@ export default function Dashboard() {
       icon: "⭐",
       title: "User Level",
       value: (user?.currentLevel || 1).toLocaleString(),
+      rawValue: user?.currentLevel || 1,
       sub: "Level",
       color: "text-yellow-600",
       bg: "to-yellow-50",
@@ -423,7 +435,11 @@ export default function Dashboard() {
             <div
               className={`font-black text-[16px] mt-0.5 z-10 ${stat.color} drop-shadow-sm tracking-tight`}
             >
-              {stat.value}
+              {stat.rawValue !== undefined ? (
+                <AnimatedCounter value={stat.rawValue} />
+              ) : (
+                stat.value
+              )}
             </div>
             
             <div className={`text-[8px] font-extrabold z-10 block mt-1 uppercase tracking-widest bg-gradient-to-b from-white ${stat.bg} px-2 py-0.5 rounded-lg border border-white/80 shadow-[0_2px_4px_rgba(0,0,0,0.05)] ${stat.color} opacity-90`}>

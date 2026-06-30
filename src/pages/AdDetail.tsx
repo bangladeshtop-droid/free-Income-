@@ -193,99 +193,129 @@ export default function AdDetail() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-6 bg-gray-50 text-gray-900 relative">
+    <div className="flex flex-col min-h-screen -mx-4 -my-6 px-4 py-6 bg-[#070514] text-white relative">
+      {/* Background Glows */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none" />
+
       {/* Header */}
       <header className="flex items-center justify-between mb-8 relative z-10 pt-2">
-        <PremiumBackButton fallbackPath="/ads" className="scale-90 origin-left" />
-        <button className="flex items-center space-x-2 bg-white border-2 border-gray-100 rounded-2xl px-3 py-2 shadow-[0_4px_0_rgb(229,231,235)] active:shadow-[0_0px_0_rgb(229,231,235)] active:translate-y-[4px] transition-all">
-          <span className="text-[10px] text-blue-600 font-black border-2 border-blue-200 rounded-lg flex items-center justify-center w-6 h-6 bg-blue-50">
-            A
-          </span>
-          <span className="text-xs font-black text-[#2C334A] uppercase tracking-wider">ENG</span>
+        <PremiumBackButton fallbackPath="/ads" theme="dark" className="scale-90 origin-left" />
+        <button className="flex items-center space-x-2 bg-[#12142B] border border-white/10 rounded-2xl px-3 py-2 shadow-sm">
+          <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center">
+            <span className="text-[8px] text-white font-black">🌐</span>
+          </div>
+          <span className="text-xs font-bold text-white tracking-wider">ENG</span>
+          <span className="text-xs text-gray-500">▼</span>
         </button>
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-col items-center flex-1 w-full pt-4 relative animate-in fade-in slide-in-from-bottom-4">
-        {/* Glow Effects */}
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-48 h-48 bg-blue-400/20 blur-[60px] pointer-events-none rounded-full" />
-
-        {/* 3D Icon */}
-        <div className="relative mb-6">
-          <div className="w-28 h-28 bg-gradient-to-br from-white to-blue-50 rounded-[32px] flex items-center justify-center shadow-[0_12px_24px_rgba(0,0,0,0.1)] border-4 border-white transform rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
-            {countdown !== null ? (
-              <Clock className="w-12 h-12 text-yellow-500 drop-shadow-md" />
-            ) : (
-              <Video
-                className="w-12 h-12 text-blue-500 drop-shadow-md"
-                fill="currentColor"
-              />
-            )}
-          </div>
+      <div className="flex flex-col flex-1 w-full relative z-10 animate-in fade-in slide-in-from-bottom-4">
+        
+        {/* Podium and Icon */}
+        <div className="relative flex justify-center mb-6">
+            <div className="w-32 h-32 relative">
+               <div className="absolute inset-0 bg-blue-500/20 blur-[30px] rounded-full" />
+               <div className="absolute bottom-0 w-[120%] left-[-10%] h-8 bg-indigo-900/50 rounded-[100%] shadow-[0_0_20px_rgba(79,70,229,0.4)] border border-indigo-500/30"></div>
+               <div className="absolute bottom-2 w-full left-0 h-6 bg-[#1A1A32] rounded-[100%] flex items-center justify-center">
+                  <div className="w-[80%] h-[70%] bg-[#242442] rounded-[100%]"></div>
+               </div>
+               {countdown !== null ? (
+                 <Clock className="w-20 h-20 text-yellow-400 absolute top-1 left-6 drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]" />
+               ) : (
+                 <div className="w-20 h-20 absolute top-0 left-6 bg-gradient-to-b from-purple-400 to-indigo-500 rounded-3xl flex items-center justify-center shadow-[0_10px_25px_rgba(99,102,241,0.5)] border border-white/20">
+                    <Video className="w-10 h-10 text-white drop-shadow-md" fill="currentColor" />
+                 </div>
+               )}
+            </div>
         </div>
 
-        <h1 className="text-3xl font-black mb-2 text-[#2C334A] tracking-tight text-center leading-tight">
+        <h1 className="text-3xl font-black mb-1 text-white tracking-tight text-center leading-tight">
           {countdown !== null ? "Daily Limit Reached" : "Rewarded Ad"}
         </h1>
-        <p className="text-gray-500 text-sm mb-10 font-bold text-center px-4 max-w-[280px]">
+        <p className="text-gray-400 text-[13px] mb-8 text-center px-4">
           {countdown !== null
-            ? "You have watched all 50 ads for today. Come back tomorrow!"
+            ? "You have watched all 50 ads for today."
             : "Earn 50 Coins for each 5 advertisements."}
         </p>
 
-        {/* Details Card */}
-        <div className="w-full bg-white border-2 border-gray-100 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 blur-[40px] rounded-full pointer-events-none" />
-          
-          <div className="relative z-10">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-black text-[#2C334A] tracking-wide text-sm uppercase">
-                Ad Progress
-              </h3>
-              <span className="text-blue-600 font-black text-sm tracking-widest">
-                {adCount} / 5
-              </span>
+        {/* Progress Cards */}
+        <div className="w-full bg-[#12142B]/80 backdrop-blur-xl border border-white/10 rounded-[24px] p-5 mb-4 relative shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+          {/* Ad Progress */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+               <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center border border-indigo-500/30">
+                     <Video className="w-5 h-5 text-indigo-400" />
+                  </div>
+                  <div>
+                     <h3 className="text-white text-[13px] font-bold uppercase tracking-wider">Ad Progress</h3>
+                     <p className="text-gray-400 text-[10px]">Watch ads to earn coins</p>
+                  </div>
+               </div>
+               <div className="bg-[#1E1B3A] text-purple-300 font-bold text-[13px] px-3 py-1.5 rounded-lg border border-purple-500/20">
+                  {adCount} / 5
+               </div>
             </div>
-
-            {/* Custom Progress Bar */}
-            <div className="w-full h-4 bg-gray-100 rounded-full mb-8 shadow-inner overflow-hidden relative border-2 border-white">
-              <div
-                className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full relative transition-all duration-500 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2)]"
-                style={{ width: `${(adCount / 5) * 100}%` }}
-              ></div>
-            </div>
-
-            {/* Daily Limit Progress */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <div className="flex items-center space-x-1.5 text-green-600">
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-[11px] font-black tracking-wider uppercase">
-                    Daily Limit
-                  </span>
-                </div>
-                <span className="text-[#2C334A] font-black text-sm tracking-widest">
-                  {dailyWatched} / 50
-                </span>
-              </div>
-              <div className="w-full h-4 bg-gray-100 rounded-full shadow-inner overflow-hidden relative border-2 border-white">
-                <div
-                  className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full relative transition-all duration-500 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2)]"
-                  style={{ width: `${(dailyWatched / 50) * 100}%` }}
-                ></div>
-              </div>
+            <div className="w-full h-3 bg-[#1A1A32] rounded-full overflow-hidden border border-white/5 shadow-inner">
+               <div className="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)] relative transition-all duration-500" style={{ width: `${(adCount / 5) * 100}%` }}></div>
             </div>
           </div>
+
+          <div className="w-full h-[1px] bg-white/5 mb-6"></div>
+
+          {/* Daily Limit */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+               <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center border border-emerald-500/30">
+                     <Calendar className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <div>
+                     <h3 className="text-white text-[13px] font-bold uppercase tracking-wider">Daily Limit</h3>
+                     <p className="text-gray-400 text-[10px]">Maximum ads you can watch</p>
+                  </div>
+               </div>
+               <div className="bg-[#1A2E26] text-emerald-400 font-bold text-[13px] px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                  {dailyWatched} / 50
+               </div>
+            </div>
+            <div className="w-full h-3 bg-[#1A1A32] rounded-full overflow-hidden border border-white/5 shadow-inner">
+               <div className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)] relative transition-all duration-500" style={{ width: `${(dailyWatched / 50) * 100}%` }}></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Earn More Coins Promo */}
+        <div className="w-full bg-[#12142B]/80 backdrop-blur-xl border border-white/10 rounded-[20px] p-4 flex items-center justify-between mb-8 shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+           <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 relative flex items-center justify-center">
+                 <div className="absolute w-8 h-8 bg-yellow-400 rounded-full shadow-[inset_0_-4px_4px_rgba(180,100,0,0.5)] border-2 border-yellow-200 top-1 left-0 z-10" />
+                 <div className="absolute w-8 h-8 bg-yellow-400 rounded-full shadow-[inset_0_-4px_4px_rgba(180,100,0,0.5)] border-2 border-yellow-200 bottom-0 left-2 z-20" />
+                 <div className="absolute w-8 h-8 bg-yellow-500 rounded-full shadow-[inset_0_-4px_4px_rgba(180,100,0,0.5)] border-2 border-yellow-200 top-2 right-0 z-30" />
+              </div>
+              <div>
+                 <h4 className="text-purple-300 font-bold text-[15px] mb-0.5">Earn More Coins</h4>
+                 <p className="text-gray-400 text-[10px] leading-tight">Watch ads daily and<br/>boost your earnings!</p>
+              </div>
+           </div>
+           <div className="w-12 h-12 flex items-end justify-end space-x-1 opacity-20">
+              <div className="w-2 h-4 bg-purple-400 rounded-sm"></div>
+              <div className="w-2 h-6 bg-purple-400 rounded-sm"></div>
+              <div className="w-2 h-10 bg-purple-400 rounded-sm"></div>
+              <div className="absolute w-12 h-12 border-t-2 border-r-2 border-purple-400 rounded-tr-[100%] right-0 top-0"></div>
+           </div>
         </div>
 
         {/* Action Button */}
         {countdown !== null ? (
           <div className="w-full mt-auto relative overflow-hidden pb-4">
-            <div className="w-full bg-gray-50 border-2 border-gray-200 py-4 rounded-2xl font-black text-lg text-yellow-600 flex flex-col items-center justify-center pointer-events-none shadow-inner">
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">
+            <div className="w-full bg-[#1A1A32] border border-white/10 py-4 rounded-full font-black text-lg text-yellow-500 flex flex-col items-center justify-center pointer-events-none shadow-inner">
+              <span className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
                 Time Remaining
               </span>
-              <span className="font-mono text-2xl tracking-widest drop-shadow-sm">
+              <span className="font-mono text-xl tracking-widest drop-shadow-sm">
                 {formatTime(countdown)}
               </span>
             </div>
@@ -293,10 +323,10 @@ export default function AdDetail() {
         ) : isWatchingAd ? (
           <button
             onClick={closeAdEarly}
-            className="w-full mt-auto relative overflow-hidden pb-4 group"
+            className="w-full mt-auto relative overflow-hidden pb-4"
           >
-            <div className="w-full bg-gradient-to-b from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white py-4 rounded-2xl font-black text-[15px] tracking-wide shadow-[0_6px_0_rgb(153,27,27)] h-[60px] flex items-center justify-center transition-transform active:translate-y-[6px] active:shadow-[0_0px_0_rgb(153,27,27)] z-10 relative uppercase">
-              Cancel Ad (Wait {adTimer}s)
+            <div className="w-full bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-full font-bold text-[15px] shadow-[0_0_20px_rgba(220,38,38,0.4)] h-[55px] flex items-center justify-center transition-transform active:scale-95 z-10 relative uppercase tracking-wider">
+              Cancel (Wait {adTimer}s)
             </div>
           </button>
         ) : (
@@ -305,16 +335,26 @@ export default function AdDetail() {
             onClick={handleWatchAd}
             className={`w-full mt-auto relative overflow-hidden pb-4 group ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
           >
-            <div className={`w-full bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-4 rounded-2xl font-black text-[15px] tracking-wide shadow-[0_6px_0_rgb(30,58,138)] h-[60px] flex items-center justify-center transition-transform ${isLoading ? '' : 'active:translate-y-[6px] active:shadow-[0_0px_0_rgb(30,58,138)]'} z-10 relative uppercase`}>
-              {isLoading ? "Loading Ad..." : "Watch Ad Now"}
+            <div className={`w-full bg-gradient-to-r from-[#4F46E5] to-[#9333EA] hover:from-[#4338CA] hover:to-[#7E22CE] text-white rounded-full font-black text-[15px] shadow-[0_0_20px_rgba(139,92,246,0.5)] h-[55px] flex items-center justify-center transition-all ${isLoading ? '' : 'active:scale-95'} z-10 relative uppercase tracking-wider`}>
+              {!isLoading && (
+                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center mr-3 backdrop-blur-sm">
+                   <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-1" />
+                </div>
+              )}
+              {isLoading ? "Loading..." : "Watch Ad Now"}
             </div>
           </button>
         )}
 
         {countdown === null && (
-          <p className="text-center text-gray-500 text-xs font-bold mt-2 mb-4 max-w-[250px] tracking-wide">
-            Stay on the ad for 15 seconds to progress towards the reward.
-          </p>
+          <div className="flex items-center justify-center space-x-2 text-gray-500 pb-2">
+            <div className="w-4 h-4 rounded-full border border-gray-500 flex items-center justify-center">
+              <svg className="w-2 h-2 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+            </div>
+            <p className="text-[10px] font-medium leading-tight">
+              Stay on the ad for 15 seconds<br/>to progress towards the reward.
+            </p>
+          </div>
         )}
       </div>
 

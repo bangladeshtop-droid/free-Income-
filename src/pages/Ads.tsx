@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { useAuthStore } from "../store/useAuthStore";
+import { Lock } from "lucide-react";
 
 const HARDCODED_ADS = Array.from({ length: 15 }, (_, i) => ({
   id: `ad-${i + 1}`,
@@ -17,7 +19,10 @@ const AD_EMOJIS = ['🎬', '📺', '🚀', '🎁', '💎', '🎯', '🕹️', '�
 
 export default function Ads() {
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
   const [tasks, setTasks] = useState<any[]>(HARDCODED_ADS);
+
+  const isVipUser = user?.isVip && user?.vipExpiry && user?.vipExpiry > Date.now();
 
   useEffect(() => {
     const adsRef = collection(db, 'ads');
@@ -69,16 +74,29 @@ export default function Ads() {
             <div 
               key={task.fbId || task.id} 
               className={`rounded-[28px] p-4 flex flex-col items-center relative overflow-hidden transition-all duration-200 transform border-2 shadow-[0_6px_0_rgb(229,231,235)] ${task.active ? 'bg-white border-blue-100 shadow-[0_6px_0_rgb(191,219,254)] hover:shadow-[0_2px_0_rgb(191,219,254)] hover:translate-y-[4px] cursor-pointer' : 'bg-gray-50 border-gray-100 grayscale-[0.5] opacity-80'}`}
-              onClick={() => task.active && navigate(`/ads/${task.fbId || task.id}`)}
+              onClick={() => {
+                if (!task.active) return;
+                if (idx >= 3 && !isVipUser) {
+                   alert("Please buy a VIP plan to access this ad campaign!");
+                   navigate("/vip");
+                   return;
+                }
+                navigate(`/ads/${task.fbId || task.id}`);
+              }}
             >
               {task.active && (
                   <div className="absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full blur-[40px] opacity-20 pointer-events-none" />
               )}
               
-              <div className={`w-14 h-14 rounded-2xl mb-3 flex items-center justify-center border-2 z-10 shadow-inner ${task.active ? 'bg-gradient-to-tr from-cyan-100 to-blue-50 border-white' : 'bg-gray-100 border-white'}`}>
+              <div className={`w-14 h-14 rounded-2xl mb-3 flex items-center justify-center border-2 z-10 shadow-inner relative ${task.active ? 'bg-gradient-to-tr from-cyan-100 to-blue-50 border-white' : 'bg-gray-100 border-white'}`}>
                 <span className={`text-[2rem] filter ${task.active ? 'drop-shadow-md' : 'opacity-70'}`}>
                   {emoji}
                 </span>
+                {idx >= 3 && !isVipUser && (
+                  <div className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center backdrop-blur-[1px]">
+                     <Lock className="w-6 h-6 text-white" />
+                  </div>
+                )}
               </div>
               
               <h3 className={`font-extrabold text-[12px] mb-3 tracking-wide z-10 text-center truncate w-full ${task.active ? 'text-[#2C334A]' : 'text-gray-400'}`}>{task.name}</h3>
